@@ -32,7 +32,8 @@ app.post("/scrap", jsonParser, async (request, response) => {
     response.json(elemText);
     await browser.close();
   } catch (error) {
-    response.json(error);
+    console.log(error);
+    response.json("errore");
   }
 });
 
