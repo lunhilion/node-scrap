@@ -10,6 +10,8 @@ var jsonParser = bodyParser.json();
 
 app.post("/scrap", jsonParser, async (request, response) => {
   try {
+    const username = await request.body.username;
+    const password = await request.body.password;
     const browser = await puppeteer.launch({
       args: ["--no-sandbox"]
     });
@@ -17,18 +19,15 @@ app.post("/scrap", jsonParser, async (request, response) => {
     await page.goto(
       "https://i.360.cn/login/?src=pcw_home&destUrl=https://www.360.cn/"
     );
-    await page.$eval(
-      "input[name=userName]",
-      el => (el.value = request.body.username)
-    );
-    await page.$eval(
-      "input[name=password]",
-      el => (el.value = request.body.password)
-    );
+    await page.$eval("input[name=userName]", (el, value) => el.value = value, username);
+    await page.$eval("input[name=password]", (el, value) => el.value = value, password);
     await page.click('input[type="submit"]');
+    await page.waitForNavigation();
+    
+    const elemText = await page.$eval("#userinfo > div > p > a:nth-child(2)", elem => elem.innerText)
 
     const cookies = await page.cookies();
-    response.json(cookies);
+    response.json(elemText);
     await browser.close();
   } catch (error) {
     console.log(error);
