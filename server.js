@@ -18,6 +18,7 @@ app.post("/scrap", jsonParser, async (request, response) => {
     
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0); 
+    console.log(request.body.username);
     await page.goto(
       "https://i.360.cn/login/?src=pcw_home&destUrl=https://www.360.cn/"
     );
@@ -32,8 +33,7 @@ app.post("/scrap", jsonParser, async (request, response) => {
     response.json(elemText);
     await browser.close();
   } catch (error) {
-    console.log(error);
-    response.json("errore");
+    response.json(error);
   }
 });
 
